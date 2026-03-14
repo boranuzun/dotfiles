@@ -1,0 +1,16 @@
+{{- $email := promptStringOnce . "email" "Email address" -}}
+{{- $name := promptStringOnce . "name" "Full name" -}}
+{{- $hasOrbStack := promptBoolOnce . "hasOrbStack" "Is OrbStack installed?" -}}
+{{- $hasJetBrains := promptBoolOnce . "hasJetBrains" "Is JetBrains Toolbox installed?" -}}
+
+encryption = "age"
+
+[data]
+  email = {{ $email | quote }}
+  name = {{ $name | quote }}
+  hasOrbStack = {{ $hasOrbStack }}
+  hasJetBrains = {{ $hasJetBrains }}
+
+[age]
+  identity = "~/.config/chezmoi/key.txt"
+  recipient = "age1kufmhsfggzs6c9qsf8h8p622c4rwjg4hmty9gfvanm6fp72s756q65exra"

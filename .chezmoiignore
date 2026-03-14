@@ -1,0 +1,17 @@
+# opencode runtime data
+dot_config/opencode/memory.jsonl
+dot_config/opencode/node_modules
+dot_config/opencode/bun.lock
+dot_config/opencode/package.json
+
+# nvim plugin lock (regenerated on sync)
+dot_config/nvim/lazy-lock.json
+
+# macOS metadata
+.DS_Store
+
+# chezmoi age key (never commit)
+key.txt
+
+# yazi backup files
+dot_config/yazi/yazi.toml-*
