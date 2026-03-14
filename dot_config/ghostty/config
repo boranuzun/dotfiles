@@ -1,0 +1,36 @@
+#ayu, synthwave, Nocturnal Winter
+theme = dark:Github Dark, light:Github Light Default
+font-family = JetBrainsMonoNL NFM Regular
+font-size = 16
+background-opacity = 0.9
+background-blur-radius = 80
+unfocused-split-opacity = 0.5
+unfocused-split-fill = 000000
+confirm-close-surface = false
+split-divider-color = ffffff
+window-save-state = always
+
+keybind = super+alt+up=new_split:up
+keybind = super+alt+down=new_split:down
+keybind = super+alt+right=new_split:right
+keybind = super+alt+left=new_split:left
+
+keybind = super+up=goto_split:up
+keybind = super+down=goto_split:down
+keybind = super+right=goto_split:right
+keybind = super+left=goto_split:left
+
+keybind = global:super+alt+space=toggle_quick_terminal
+quick-terminal-position = bottom
+quick-terminal-animation-duration = 0
+quick-terminal-autohide = false
+quick-terminal-space-behavior = remain
+
+quick-terminal-position = center
+macos-titlebar-style = tabs
+window-decoration = none
+macos-icon = blueprint
+macos-custom-icon = ~/.config/ghostty/icons/whiskers_1024x1024.png
+window-decoration = true
+window-subtitle = working-directory
+# cursor-style = bar

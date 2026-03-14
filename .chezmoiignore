@@ -9,6 +9,8 @@ dot_config/nvim/lazy-lock.json
 
 # macOS metadata
 .DS_Store
+**/.DS_Store
+**/dot_DS_Store
 
 # chezmoi age key (never commit)
 key.txt
