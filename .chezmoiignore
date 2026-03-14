@@ -15,3 +15,6 @@ key.txt
 
 # yazi backup files
 dot_config/yazi/yazi.toml-*
+
+# git internals from submodules (e.g. superpowers/)
+**/dot_git/

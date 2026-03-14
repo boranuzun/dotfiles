@@ -1,0 +1,47 @@
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+
+# Type must be one of the following:
+#   feat:     A new feature
+#   fix:      A bug fix
+#   docs:     Documentation only changes
+#   style:    Changes that do not affect the meaning of the code
+#   refactor: A code change that neither fixes a bug nor adds a feature
+#   perf:     A code change that improves performance
+#   test:     Adding missing tests or correcting existing tests
+#   build:    Changes that affect the build system or external dependencies
+#   ci:       Changes to our CI configuration files and scripts
+#   chore:    Other changes that don't modify src or test files
+#   revert:   Reverts a previous commit
+#
+# Scope (optional): noun describing a section of the codebase
+#   Examples: auth, api, ui, database, config
+#
+# Subject: imperative, present tense, no period, max 50 chars
+#   Good: "add user authentication"
+#   Bad:  "adds user authentication" or "added user authentication"
+#
+# Body (optional): explain what and why, not how, wrap at 72 chars
+#   - Use bullet points if needed
+#   - Reference issues and pull requests liberally after the first line
+#
+# Footer (optional): reference issues, breaking changes
+#   Examples:
+#   Fixes #123
+#   Closes #456
+#   BREAKING CHANGE: environment variables now use MYAPP_ prefix
+#
+# Examples:
+#   feat(auth): add OAuth2 login support
+#   fix(api): handle null user data in profile endpoint
+#   docs: update README with new installation steps
+#   style: fix linting errors in user service
+#   refactor(database): simplify user query logic
+#   perf: optimize image loading for mobile devices
+#   test: add unit tests for payment processing
+#   build: update webpack to version 5
+#   ci: add automated testing pipeline
+#   chore: update dependencies to latest versions
