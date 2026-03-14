@@ -1,11 +1,12 @@
-# opencode runtime data
-dot_config/opencode/memory.jsonl
-dot_config/opencode/node_modules
-dot_config/opencode/bun.lock
-dot_config/opencode/package.json
+# opencode (not tracked)
+dot_config/opencode/
 
-# nvim plugin lock (regenerated on sync)
-dot_config/nvim/lazy-lock.json
+# nvim (not tracked)
+dot_config/nvim/
+
+# 1Password CLI (machine-specific, not tracked)
+dot_config/op/
+dot_config/private_op/
 
 # macOS metadata
 .DS_Store
@@ -20,3 +21,4 @@ dot_config/yazi/yazi.toml-*
 
 # git internals from submodules (e.g. superpowers/)
 **/dot_git/
+README.md

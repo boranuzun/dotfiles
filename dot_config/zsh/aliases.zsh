@@ -12,7 +12,7 @@ alias dow="$HOME/Downloads"
 
 alias ff='fastfetch'
 
-# update all 
+# update all
 alias sysup='brew upgrade; mas upgrade; omz update'
 alias buc='brew upgrade --cask'
 
@@ -40,4 +40,7 @@ alias idea='/Users/boran/Applications/IntelliJ\ IDEA\ Ultimate.app/Contents/MacO
 alias fh='fc -l 1 | tac | fzf --no-sort --border'
 
 # OpenCode
-alias oc="opencode"
+alias opc="opencode"
+
+# Chezmoi
+alias cm="chezmoi"
