@@ -10,21 +10,23 @@ ZSH_THEME=""
 
 # Optional: load specific plugins
 plugins=(
-    git 
-    sudo 
-    zsh-autosuggestions 
-    zsh-syntax-highlighting 
-    web-search 
-    copyfile 
-    copybuffer 
-    dirhistory 
-    python 
-    history 
-    macos 
-    copypath  
-    emoji 
-    encode64 
-    colored-man-pages 
+    git
+    sudo
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+    web-search
+    copyfile
+    copybuffer
+    dirhistory
+    python
+    history
+    {{- if eq .chezmoi.os "darwin" }}
+    macos
+    {{- end }}
+    copypath
+    emoji
+    encode64
+    colored-man-pages
     aliases
 )
 

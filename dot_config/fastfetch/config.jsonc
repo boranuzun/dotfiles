@@ -63,11 +63,6 @@
       "keyColor": "green"
     },
     {
-      "type": "bluetooth",
-      "key": "├─",
-      "keyColor": "green"
-    },
-    {
       "type": "sound",
       "key": "╰─",
       "keyColor": "green"

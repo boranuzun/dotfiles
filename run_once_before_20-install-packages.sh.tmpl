@@ -1,3 +1,127 @@
+{{- if eq .chezmoi.os "darwin" -}}
 #!/bin/sh
 # Install all packages from Brewfile
 brew bundle --file="{{ .chezmoi.sourceDir }}/Brewfile"
+
+# oh-my-zsh
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
+# zsh-autosuggestions
+if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
+  git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+fi
+
+# zsh-syntax-highlighting
+if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]; then
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+fi
+{{- else if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+set -e
+
+# Detect distro
+. /etc/os-release
+
+install_script_tool() {
+  local name="$1"
+  local cmd="$2"
+  if ! command -v "$name" >/dev/null 2>&1; then
+    echo "Installing $name via install script..."
+    eval "$cmd"
+  else
+    echo "$name already installed, skipping."
+  fi
+}
+
+if [ "$ID" = "arch" ]; then
+  # --- Arch Linux ---
+  sudo pacman -Syu --noconfirm
+  sudo pacman -S --noconfirm --needed \
+    zsh starship eza bat fzf fd ripgrep zoxide \
+    git neovim lazygit github-cli jq tmux age gnupg \
+    curl wget rsync tree btop fastfetch chezmoi just sops
+
+elif [ "$ID" = "debian" ] || [ "$ID" = "ubuntu" ]; then
+  # --- Debian / Ubuntu ---
+  sudo apt-get update -y
+  sudo apt-get install -y \
+    zsh eza bat fd-find ripgrep \
+    git neovim jq tmux age gnupg \
+    curl wget rsync tree btop
+
+  # gh CLI — official apt repo
+  if ! command -v gh >/dev/null 2>&1; then
+    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+      | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+    sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+      | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+    sudo apt-get update -y
+    sudo apt-get install -y gh
+  fi
+
+  # fzf — install from GitHub to get a version that supports `fzf --zsh` (>= 0.48.0)
+  if ! command -v fzf >/dev/null 2>&1; then
+    FZF_VERSION=$(curl -s "https://api.github.com/repos/junegunn/fzf/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*')
+    curl -Lo /tmp/fzf.tar.gz "https://github.com/junegunn/fzf/releases/download/v${FZF_VERSION}/fzf-${FZF_VERSION}-linux_amd64.tar.gz"
+    tar -xf /tmp/fzf.tar.gz -C /tmp fzf
+    sudo install /tmp/fzf /usr/local/bin/fzf
+  fi
+
+  # starship
+  install_script_tool starship "curl -sS https://starship.rs/install.sh | sh -s -- --yes"
+
+  # zoxide
+  install_script_tool zoxide "curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh"
+
+  # lazygit
+  if ! command -v lazygit >/dev/null 2>&1; then
+    LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*')
+    curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+    tar -xf /tmp/lazygit.tar.gz -C /tmp lazygit
+    sudo install /tmp/lazygit /usr/local/bin
+  fi
+
+  # fastfetch
+  install_script_tool fastfetch "sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch && sudo apt-get update -y && sudo apt-get install -y fastfetch"
+
+  # chezmoi
+  install_script_tool chezmoi "sh -c \"\$(curl -fsLS get.chezmoi.io)\" -- -b \$HOME/.local/bin"
+
+  # just
+  install_script_tool just "curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to \$HOME/.local/bin"
+
+  # oh-my-zsh
+  if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  fi
+
+  # zsh-autosuggestions
+  if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
+    git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+  fi
+
+  # zsh-syntax-highlighting
+  if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]; then
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+  fi
+
+  # sops
+  if ! command -v sops >/dev/null 2>&1; then
+    SOPS_VERSION=$(curl -s "https://api.github.com/repos/getsops/sops/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*')
+    curl -Lo /tmp/sops "https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops-v${SOPS_VERSION}.linux.amd64"
+    sudo install /tmp/sops /usr/local/bin/sops
+  fi
+
+else
+  echo "Unsupported distro: $ID. Skipping package install."
+fi
+
+# Set zsh as default shell if not already
+if [ "$(getent passwd "$USER" | cut -d: -f7)" != "$(which zsh)" ]; then
+  echo "Setting zsh as default shell..."
+  chsh -s "$(which zsh)"
+fi
+{{- end }}

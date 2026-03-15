@@ -1,7 +1,9 @@
 {{- $email := promptStringOnce . "email" "Email address" -}}
 {{- $name := promptStringOnce . "name" "Full name" -}}
-{{- $hasOrbStack := promptBoolOnce . "hasOrbStack" "Is OrbStack installed?" -}}
-{{- $hasJetBrains := promptBoolOnce . "hasJetBrains" "Is JetBrains Toolbox installed?" -}}
+{{- $hasOrbStack := false -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $hasOrbStack = promptBoolOnce . "hasOrbStack" "Is OrbStack installed?" -}}
+{{- end -}}
 
 encryption = "age"
 
@@ -9,7 +11,6 @@ encryption = "age"
   email = {{ $email | quote }}
   name = {{ $name | quote }}
   hasOrbStack = {{ $hasOrbStack }}
-  hasJetBrains = {{ $hasJetBrains }}
 
 [age]
   identity = "~/.config/chezmoi/key.txt"

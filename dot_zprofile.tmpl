@@ -1,14 +1,12 @@
 source ~/.profile
-eval "$(/opt/homebrew/bin/brew shellenv)"
 
-{{ if .hasOrbStack -}}
-# OrbStack
-source ~/.orbstack/shell/init.zsh 2>/dev/null || :
+{{- if eq .chezmoi.os "darwin" }}
+eval "$(/opt/homebrew/bin/brew shellenv)"
 {{- end }}
 
-{{ if .hasJetBrains -}}
-# JetBrains Toolbox scripts
-export PATH="$PATH:$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
+{{ if and (eq .chezmoi.os "darwin") .hasOrbStack -}}
+# OrbStack
+source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 {{- end }}
 
 export PATH="$PATH:$HOME/.local/bin"

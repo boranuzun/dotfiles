@@ -13,14 +13,16 @@ alias dow="$HOME/Downloads"
 alias ff='fastfetch'
 
 # update all
+{{- if eq .chezmoi.os "darwin" }}
 alias sysup='brew upgrade; mas upgrade; omz update'
 alias buc='brew upgrade --cask'
-
-# launch pentaho data integration
-alias spoon='/Applications/data-integration/spoon.sh'
-
-# open quicklook
-alias ql='qlmanage -p'
+{{- else if eq .chezmoi.os "linux" }}
+{{-   if eq .chezmoi.osRelease.id "arch" }}
+alias sysup='sudo pacman -Syu; omz update'
+{{-   else }}
+alias sysup='sudo apt update && sudo apt upgrade -y; omz update'
+{{-   end }}
+{{- end }}
 
 # create a new private repo on GitHub and push the current directory to it
 alias gh-create='gh repo create --private --source=. --remote=origin && git push -u --all && gh browse'
@@ -33,9 +35,6 @@ alias ltree="eza --tree --level=2  --icons --git"
 # ---- Zoxide (better cd) ----
 alias cd=z
 
-# IntelliJ IDEA Ultimate alias
-alias idea='/Users/boran/Applications/IntelliJ\ IDEA\ Ultimate.app/Contents/MacOS/idea'
-
 # FZF history search
 alias fh='fc -l 1 | tac | fzf --no-sort --border'
 
@@ -44,3 +43,14 @@ alias opc="opencode"
 
 # Chezmoi
 alias cm="chezmoi"
+
+{{ if eq .chezmoi.os "darwin" -}}
+# open quicklook
+alias ql='qlmanage -p'
+
+# launch pentaho data integration
+alias spoon='/Applications/data-integration/spoon.sh'
+
+# IntelliJ IDEA Ultimate alias
+alias idea='$HOME/Applications/IntelliJ\ IDEA\ Ultimate.app/Contents/MacOS/idea'
+{{- end }}
