@@ -5,7 +5,6 @@ brew "thefuck"
 brew "zoxide"
 
 # Shell history
-brew "atuin"
 brew "fzf"
 brew "navi"
 

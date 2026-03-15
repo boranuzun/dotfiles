@@ -25,3 +25,5 @@ Thumbs.db
 .idea/
 # Node
 npm-debug.log
+
+**/.claude/settings.local.json

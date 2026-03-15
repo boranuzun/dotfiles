@@ -3,17 +3,15 @@
 # Install all packages from Brewfile
 brew bundle --file="{{ .chezmoi.sourceDir }}/Brewfile"
 
-# oh-my-zsh
+# --- Common: oh-my-zsh + plugins ---
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
-# zsh-autosuggestions
 if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
   git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
 fi
 
-# zsh-syntax-highlighting
 if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]; then
   git clone https://github.com/zsh-users/zsh-syntax-highlighting "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
 fi
@@ -93,21 +91,6 @@ elif [ "$ID" = "debian" ] || [ "$ID" = "ubuntu" ]; then
   # just
   install_script_tool just "curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to \$HOME/.local/bin"
 
-  # oh-my-zsh
-  if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  fi
-
-  # zsh-autosuggestions
-  if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
-    git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
-  fi
-
-  # zsh-syntax-highlighting
-  if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]; then
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
-  fi
-
   # sops
   if ! command -v sops >/dev/null 2>&1; then
     SOPS_VERSION=$(curl -s "https://api.github.com/repos/getsops/sops/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*')
@@ -117,6 +100,19 @@ elif [ "$ID" = "debian" ] || [ "$ID" = "ubuntu" ]; then
 
 else
   echo "Unsupported distro: $ID. Skipping package install."
+fi
+
+# --- Common: oh-my-zsh + plugins (all distros) ---
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
+if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
+  git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+fi
+
+if [ ! -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]; then
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
 fi
 
 # Set zsh as default shell if not already
