@@ -1,0 +1,111 @@
+[user]
+	name = {{ .name }}
+	email = {{ .email }}
+{{- if .gpgKeyId }}
+	signingKey = {{ .gpgKeyId }}
+{{- end }}
+
+[core]
+	excludesfile = ~/.config/git/ignore
+	editor = code --wait
+	preloadindex = true
+
+[alias]
+	st = status -s
+	sta = status
+	conf = config --global --edit
+	lol = log --oneline --graph --all
+
+[init]
+	defaultBranch = main
+
+[branch]
+	sort = -committerdate
+
+[column]
+	ui = auto
+
+[tag]
+	sort = version:refname
+
+[advice]
+	addEmptyPathspec = false
+	statusHints = false
+
+[help]
+	autocorrect = prompt
+
+[status]
+	showStash = true
+
+[commit]
+{{- if .gpgKeyId }}
+	gpgsign = true
+{{- end }}
+	template = ~/.config/git/template
+
+[push]
+	default = simple
+	autoSetupRemote = true
+	followTags = true
+
+[fetch]
+	prune = true
+
+[diff]
+	algorithm = histogram
+
+[rerere]
+	enabled = true
+	autoUpdate = true
+
+[pager]
+	branch = false
+	diff = diff-so-fancy | $PAGER
+
+[diff-so-fancy]
+	markEmptyLines = false
+
+[interactive]
+	diffFilter = diff-so-fancy --patch
+	singleKey = true
+
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+
+[credential]
+	helper = /usr/local/share/gcm-core/git-credential-manager
+
+[credential "https://dev.azure.com"]
+	useHttpPath = true
+
+[url "https://github.com/"]
+	insteadOf = ssh://git@github.com/
+
+[color]
+	ui = auto
+
+[color "diff"]
+	meta = black bold
+	frag = magenta
+	context = white
+	whitespace = yellow reverse
+	old = red
+
+[color "branch"]
+	current = magenta
+	local = default
+	remote = yellow
+	upstream = green
+	plain = blue
+
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path =
+
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true

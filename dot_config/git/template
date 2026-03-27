@@ -1,4 +1,4 @@
-# <type>(<scope>): <subject>
+# <type>(<scope>)(!): <subject>
 #
 # <body>
 #
@@ -29,9 +29,11 @@
 #   - Reference issues and pull requests liberally after the first line
 #
 # Footer (optional): reference issues, breaking changes
+#   - Each trailer must be: <token>: <value> (or <token> #<value>)
 #   Examples:
 #   Fixes #123
 #   Closes #456
+#   Reviewed-by: Name
 #   BREAKING CHANGE: environment variables now use MYAPP_ prefix
 #
 # Examples:
@@ -45,3 +47,4 @@
 #   build: update webpack to version 5
 #   ci: add automated testing pipeline
 #   chore: update dependencies to latest versions
+#   feat(api)!: change authentication flow to OAuth2

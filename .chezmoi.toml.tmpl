@@ -1,5 +1,6 @@
 {{- $email := promptStringOnce . "email" "Email address" -}}
 {{- $name := promptStringOnce . "name" "Full name" -}}
+{{- $gpgKeyId := promptStringOnce . "gpgKeyId" "GPG key ID for git signing (leave empty to disable)" -}}
 {{- $hasOrbStack := false -}}
 {{- if eq .chezmoi.os "darwin" -}}
 {{-   $hasOrbStack = promptBoolOnce . "hasOrbStack" "Is OrbStack installed?" -}}
@@ -10,6 +11,7 @@ encryption = "age"
 [data]
   email = {{ $email | quote }}
   name = {{ $name | quote }}
+  gpgKeyId = {{ $gpgKeyId | quote }}
   hasOrbStack = {{ $hasOrbStack }}
 
 [age]
