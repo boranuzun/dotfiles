@@ -51,6 +51,7 @@ Works on **macOS** (primary) and **Linux** (Debian/Ubuntu and Arch). All OS-spec
 | [Oh My Zsh](https://ohmyz.sh) | Zsh framework |
 | [Starship](https://starship.rs) | Shell prompt |
 | [fzf](https://github.com/junegunn/fzf) | Fuzzy finder |
+| [fnm](https://github.com/Schniz/fnm) | Node.js version manager |
 | [zoxide](https://github.com/ajeetdsouza/zoxide) | Smart `cd` |
 | [eza](https://github.com/eza-community/eza) | Modern `ls` |
 | [bat](https://github.com/sharkdp/bat) | Modern `cat` |
@@ -427,7 +428,7 @@ The Zsh configuration is split into focused modules under `~/.config/zsh/`:
 
 | File | Purpose |
 |------|---------|
-| `env.zsh.tmpl` | `$PATH` (Homebrew on macOS), `$EDITOR`, locale, Starship init, zoxide init |
+| `env.zsh.tmpl` | `$PATH` (Homebrew on macOS), `$EDITOR`, locale, Starship init, zoxide init, fnm init |
 | `history.zsh` | History file size (1,000,000 entries), dedup and sharing options |
 | `fzf.zsh` | fzf key bindings (`source <(fzf --zsh)`), previews using `bat` and `eza`, yazi `y()` wrapper |
 | `omz.zsh.tmpl` | Oh My Zsh theme (none — Starship handles prompt), plugins list |
@@ -510,7 +511,7 @@ The Starship prompt (`~/.config/starship/starship.toml`) shows:
 - `eza`, `bat`, `bat-extras`, `yazi`, `fd`, `ripgrep`, `tree`, `trash`, `duf`
 
 **Dev tools**
-- `neovim`, `git`, `git-filter-repo`, `diff-so-fancy`, `lazygit`, `gh`, `just`, `jq`, `glow`, `curl`, `wget`, `rsync`
+- `neovim`, `git`, `git-filter-repo`, `diff-so-fancy`, `lazygit`, `gh`, `just`, `fnm`, `jq`, `glow`, `curl`, `wget`, `rsync`
 
 **Security & secrets**
 - `age`, `sops`, `gnupg`, `detect-secrets`
@@ -551,11 +552,11 @@ The Starship prompt (`~/.config/starship/starship.toml`) shows:
 ### Linux — Native Packages
 
 **Arch** (via `pacman` + install scripts):
-`zsh`, `starship`, `eza`, `bat`, `fzf`, `fd`, `ripgrep`, `zoxide`, `git`, `neovim`, `lazygit`, `github-cli`, `jq`, `tmux`, `age`, `gnupg`, `curl`, `wget`, `rsync`, `tree`, `btop`, `fastfetch`, `chezmoi`, `just`, `sops`, then `oh-my-zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting` via install scripts
+`zsh`, `starship`, `eza`, `bat`, `fzf`, `fd`, `ripgrep`, `zoxide`, `git`, `neovim`, `lazygit`, `github-cli`, `jq`, `tmux`, `age`, `gnupg`, `curl`, `wget`, `rsync`, `tree`, `btop`, `fastfetch`, `chezmoi`, `just`, `sops`, then `fnm`, `oh-my-zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting` via install scripts
 
 **Debian/Ubuntu** (via `apt` + install scripts):
 - `apt`: `zsh`, `eza`, `bat`, `fd-find`, `ripgrep`, `git`, `neovim`, `jq`, `tmux`, `age`, `gnupg`, `curl`, `wget`, `rsync`, `tree`, `btop`
-- Install scripts: `gh` (official apt repo), `fzf` (GitHub releases — apt version too old for `fzf --zsh`), `starship`, `zoxide`, `lazygit`, `fastfetch`, `chezmoi`, `just`, `sops`, `oh-my-zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting`
+- Install scripts: `gh` (official apt repo), `fzf` (GitHub releases — apt version too old for `fzf --zsh`), `starship`, `zoxide`, `lazygit`, `fastfetch`, `chezmoi`, `just`, `sops`, `fnm`, `oh-my-zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting`
 
 ---
 

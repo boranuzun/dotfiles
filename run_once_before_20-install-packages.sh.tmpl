@@ -41,6 +41,9 @@ if [ "$ID" = "arch" ]; then
     git neovim lazygit github-cli jq tmux age gnupg \
     curl wget rsync tree btop fastfetch chezmoi just sops
 
+  # fnm
+  install_script_tool fnm "curl -fsSL https://fnm.vercel.app/install | bash"
+
 elif [ "$ID" = "debian" ] || [ "$ID" = "ubuntu" ]; then
   # --- Debian / Ubuntu ---
   sudo apt-get update -y
@@ -97,6 +100,9 @@ elif [ "$ID" = "debian" ] || [ "$ID" = "ubuntu" ]; then
     curl -Lo /tmp/sops "https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops-v${SOPS_VERSION}.linux.amd64"
     sudo install /tmp/sops /usr/local/bin/sops
   fi
+
+  # fnm
+  install_script_tool fnm "curl -fsSL https://fnm.vercel.app/install | bash"
 
 else
   echo "Unsupported distro: $ID. Skipping package install."
