@@ -13,6 +13,9 @@ Works on **macOS** (primary) and **Linux** (Debian/Ubuntu and Arch). All OS-spec
 - [Bootstrap](#bootstrap)
   - [macOS](#macos)
   - [Linux](#linux)
+  - [Answer the Setup Prompts](#answer-the-setup-prompts)
+  - [Verify the Setup](#verify-the-setup)
+  - [Post-Bootstrap Steps](#post-bootstrap-steps-manual)
 - [Architecture](#architecture)
 - [Directory Structure](#directory-structure)
 - [Template Variables](#template-variables)
@@ -29,8 +32,9 @@ Works on **macOS** (primary) and **Linux** (Debian/Ubuntu and Arch). All OS-spec
 
 - **One-command bootstrap** — `chezmoi init --apply boranuzun` sets up a new machine end-to-end
 - **Cross-platform** — macOS (Apple Silicon) and Linux (Debian/Ubuntu, Arch) with OS-gated templates
-- **Age encryption** for secrets (git config, SSH config, GitHub hosts)
-- **Templated configs** — shell files adapt based on OS and whether OrbStack is installed
+- **Age encryption** for secrets (SSH config, GitHub hosts)
+- **Templated configs** — shell files and git config adapt based on OS, user identity, GPG key, and whether OrbStack is installed
+- **Optional GPG commit signing** — prompted during init; signs commits automatically when a key ID is provided
 - **Auto-installs packages** — Homebrew + `Brewfile` on macOS; `apt`/`pacman` on Linux
 - **Zsh on all platforms** — installed and set as default shell on Linux automatically
 - **Conventional commit template** enforced globally for all git repos
@@ -62,7 +66,9 @@ Works on **macOS** (primary) and **Linux** (Debian/Ubuntu and Arch). All OS-spec
 | `~/.zshrc` | `dot_zshrc` | Delegates to `~/.config/zsh/.zshrc` |
 | `~/.zprofile` | `dot_zprofile.tmpl` | Templated (Homebrew/OrbStack — macOS only) |
 | `~/.config/zsh/` | `dot_config/zsh/` | All zsh config modules (templated) |
-| `~/.config/git/` | `dot_config/git/` | Global ignore, commit template, encrypted gitconfig |
+| `~/.config/git/config` | `dot_config/git/config.tmpl` | Templated (name, email, optional GPG signing) |
+| `~/.config/git/ignore` | `dot_config/git/ignore` | Global gitignore |
+| `~/.config/git/template` | `dot_config/git/template` | Commit message template |
 | `~/.config/gh/` | `dot_config/gh/` | GitHub CLI preferences and encrypted hosts |
 | `~/.config/ghostty/` | `dot_config/ghostty/` | Terminal config, themes, icons |
 | `~/.config/starship/` | `dot_config/starship/` | Prompt config |
@@ -146,6 +152,7 @@ chezmoi will ask questions on first apply:
 |--------|-------------|-----------|
 | `Email address` | Your git/personal email | `data.email` |
 | `Full name` | Your full name | `data.name` |
+| `GPG key ID for git signing (leave empty to disable)` | Optional GPG key ID — enables `commit.gpgsign = true` in git config | `data.gpgKeyId` |
 | `Is OrbStack installed?` | Enables OrbStack shell integration in `~/.zprofile` (macOS only) | `data.hasOrbStack` |
 
 Answers are saved to `~/.config/chezmoi/chezmoi.toml` and will not be asked again.
@@ -156,8 +163,12 @@ Answers are saved to `~/.config/chezmoi/chezmoi.toml` and will not be asked agai
 # Check shell is working
 fastfetch
 
-# Check git config was decrypted
+# Check git config was applied
 git config --global user.email
+git config --global user.name
+
+# Check GPG signing (if configured)
+git config --global commit.gpgsign
 
 # Check SSH config was decrypted
 cat ~/.ssh/config
@@ -231,7 +242,7 @@ No runtime OS detection happens in any shell config file.
 ~/.local/share/chezmoi/
 ├── .chezmoi.toml.tmpl               # Config template (prompts, encryption settings)
 ├── .chezmoiignore                   # Files excluded from management
-├── .gitignore                       # Excludes docs/superpowers/ (local planning docs)
+├── .gitignore                       # Excludes age key and other local-only files
 ├── Brewfile                         # All Homebrew packages and casks (macOS only)
 ├── dot_zshrc                        # → ~/.zshrc (delegates to ~/.config/zsh/.zshrc)
 ├── dot_zprofile.tmpl                # → ~/.zprofile (Homebrew/OrbStack — macOS gated)
@@ -241,12 +252,12 @@ No runtime OS detection happens in any shell config file.
 │   ├── zsh/
 │   │   ├── dot_zshrc               # → ~/.config/zsh/.zshrc (sources all modules)
 │   │   ├── aliases.zsh.tmpl        # Shell aliases (macOS/Linux variants)
-│   │   ├── env.zsh.tmpl            # $PATH, $EDITOR, Starship, zoxide, Atuin
+│   │   ├── env.zsh.tmpl            # $PATH, $EDITOR, Starship, zoxide init
 │   │   ├── fzf.zsh                 # fzf + yazi shell integration
 │   │   ├── history.zsh             # Zsh history settings
 │   │   └── omz.zsh.tmpl            # Oh My Zsh config (macos plugin gated)
 │   ├── git/
-│   │   ├── encrypted_config.age    # → ~/.config/git/config (name, email, etc.)
+│   │   ├── config.tmpl             # → ~/.config/git/config (name, email, optional GPG signing)
 │   │   ├── ignore                  # → ~/.config/git/ignore (global gitignore)
 │   │   └── template                # → ~/.config/git/template (commit message template)
 │   ├── gh/
@@ -265,7 +276,7 @@ No runtime OS detection happens in any shell config file.
 │   │   ├── keymaps.toml            # Custom keybindings
 │   │   ├── theme.toml              # Color theme
 │   │   ├── package.toml            # yazi plugins
-│   │   └── flavors/                # Theme flavors
+│   │   └── flavors/                # Theme flavors (ayu-dark, catppuccin-*, dracula, flexoki, kanagawa)
 │   ├── fastfetch/                  # System info display config
 │   └── btop/                       # Resource monitor config
 └── private_dot_ssh/
@@ -282,15 +293,21 @@ The following data variables are available in all `.tmpl` files:
 |----------|------|-------------|
 | `.chezmoi.os` | string | `"darwin"` or `"linux"` |
 | `.chezmoi.osRelease.id` | string | `"arch"`, `"debian"`, `"ubuntu"`, etc. (Linux only) |
+| `.chezmoi.sourceDir` | string | Absolute path to the chezmoi source directory |
 | `.email` | string | User's email address (from prompt) |
 | `.name` | string | User's full name (from prompt) |
+| `.gpgKeyId` | string | GPG key ID for git commit signing (empty string disables signing) |
 | `.hasOrbStack` | bool | Whether OrbStack is installed (macOS only; always `false` on Linux) |
 
 Example usage in a template:
+
 ```toml
 [user]
   email = "{{ .email }}"
   name = "{{ .name }}"
+{{- if .gpgKeyId }}
+  signingKey = "{{ .gpgKeyId }}"
+{{- end }}
 ```
 
 ---
@@ -309,7 +326,6 @@ Secrets are encrypted with [age](https://age-encryption.org) before being commit
 
 | Source file | Decrypted target |
 |-------------|-----------------|
-| `dot_config/git/encrypted_config.age` | `~/.config/git/config` |
 | `dot_config/gh/encrypted_private_hosts.yml.age` | `~/.config/gh/hosts.yml` |
 | `private_dot_ssh/encrypted_config.age` | `~/.ssh/config` |
 
@@ -328,7 +344,8 @@ chezmoi encrypt ~/.config/some/plaintext-file > \
 
 ```bash
 # Opens decrypted content in $EDITOR, re-encrypts on save
-chezmoi edit ~/.config/git/config
+chezmoi edit ~/.ssh/config
+chezmoi edit ~/.config/gh/hosts.yml
 ```
 
 ---
@@ -376,6 +393,12 @@ git add -A && git commit -m "chore: update aliases"
 git push
 ```
 
+Or use the shortcut alias:
+
+```bash
+cm cd   # chezmoi cd — jumps to source directory
+```
+
 ### Pull Changes on Another Machine
 
 ```bash
@@ -404,8 +427,8 @@ The Zsh configuration is split into focused modules under `~/.config/zsh/`:
 
 | File | Purpose |
 |------|---------|
-| `env.zsh.tmpl` | `$PATH` (Homebrew on macOS), `$EDITOR`, locale, Starship, zoxide, Atuin |
-| `history.zsh` | History file size (1,000,000 entries), dedup options |
+| `env.zsh.tmpl` | `$PATH` (Homebrew on macOS), `$EDITOR`, locale, Starship init, zoxide init |
+| `history.zsh` | History file size (1,000,000 entries), dedup and sharing options |
 | `fzf.zsh` | fzf key bindings (`source <(fzf --zsh)`), previews using `bat` and `eza`, yazi `y()` wrapper |
 | `omz.zsh.tmpl` | Oh My Zsh theme (none — Starship handles prompt), plugins list |
 | `aliases.zsh.tmpl` | All shell aliases (OS-specific variants) |
@@ -416,17 +439,18 @@ The Zsh configuration is split into focused modules under `~/.config/zsh/`:
 | Alias | Command | Description |
 |-------|---------|-------------|
 | `ls` | `eza --color --icons --long --header --git` | Long listing with git status |
-| `lt` | `eza --tree --level=2 --long --icons --git` | Tree view (2 levels) |
+| `lt` | `eza --tree --level=2 --long --icons --git` | Tree view (2 levels, with sizes) |
+| `ltree` | `eza --tree --level=2 --icons --git` | Tree view (2 levels, compact) |
 | `cd` | `z` | zoxide smart directory jump |
 | `ff` | `fastfetch` | System info |
 | `sysup` | macOS: `brew upgrade; mas upgrade; omz update` / Arch: `sudo pacman -Syu; omz update` / Debian: `sudo apt update && sudo apt upgrade -y; omz update` | Update everything |
+| `buc` | `brew upgrade --cask` | Upgrade Homebrew casks only (macOS) |
 | `opc` | `opencode` | AI coding assistant |
 | `cm` | `chezmoi` | chezmoi shortcut |
-| `gh-create` | `gh repo create --private ...` | Create private GitHub repo and push |
+| `gh-create` | `gh repo create --private --source=. --remote=origin && git push -u --all && gh browse` | Create private GitHub repo and push |
 | `fh` | `fc -l 1 \| tac \| fzf` | Fuzzy search shell history |
 | `rr` | `source ~/.zshrc` | Reload shell config |
 | `ql` | `qlmanage -p` | Quick Look preview (macOS only) |
-| `idea` | IntelliJ IDEA Ultimate binary | Launch IDE (macOS only) |
 
 ### Oh My Zsh Plugins
 
@@ -448,6 +472,27 @@ encode64                 # Base64 encode/decode
 colored-man-pages        # Colorized man pages
 aliases                  # alias-finder helpers
 ```
+
+### fzf Integration
+
+fzf is configured in `fzf.zsh` with fd as the default file finder:
+
+- **`Ctrl+T`** — fuzzy-find files, with bat syntax-highlighted preview
+- **`Alt+C`** — fuzzy-find directories, with eza tree preview
+- **`Ctrl+R`** — fuzzy search command history
+
+The `y()` function wraps yazi so the shell changes directory to wherever you navigate inside yazi when you exit it.
+
+### Starship Prompt
+
+The Starship prompt (`~/.config/starship/starship.toml`) shows:
+
+- Current directory (truncated to 5 segments)
+- Git branch and status
+- Active language/runtime versions (Python, Node.js, Go, Rust, Ruby, Lua, Haskell)
+- AWS profile, Docker context
+- Background job count
+- Command duration (shown when command takes > 500ms)
 
 ---
 
@@ -574,7 +619,8 @@ encryption = "age"
 [data]
   email = "you@example.com"
   name = "Your Name"
-  hasOrbStack = true   # set to false on Linux (ignored by templates anyway)
+  gpgKeyId = ""            # leave empty to disable GPG signing
+  hasOrbStack = true       # set to false on Linux (ignored by templates anyway)
 
 [age]
   identity = "~/.config/chezmoi/key.txt"
@@ -629,6 +675,25 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting \
 ```
 
 Then reload: `source ~/.zshrc`
+
+### GPG Commit Signing Not Working
+
+**Symptoms:** `gpg: signing failed: Inappropriate ioctl for device` or commits are not signed.
+
+**Solution:**
+
+1. Verify the key ID in your chezmoi config matches an existing key:
+   ```bash
+   gpg --list-secret-keys --keyid-format=long
+   git config --global user.signingKey
+   ```
+
+2. Ensure `GPG_TTY` is set (already in `env.zsh`):
+   ```bash
+   export GPG_TTY=$(tty)
+   ```
+
+3. If you want to disable signing, re-init with an empty GPG key ID or edit `~/.config/chezmoi/chezmoi.toml` and set `gpgKeyId = ""`, then run `chezmoi apply`.
 
 ### SSH Keys Not Available
 
